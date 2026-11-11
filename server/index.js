@@ -27,6 +27,10 @@ const adKey = (a) => `${a.platform}:${a.accountId}:${a.adId}`;
 const app = express();
 app.use(express.json({ limit: "1mb" }));
 
+// Health check for Railway. Registered before the password check so the
+// platform can reach it.
+app.get("/healthz", (_req, res) => res.json({ ok: true }));
+
 // Optional shared-password protection for when the dashboard is deployed.
 if (process.env.DASHBOARD_PASSWORD) {
   app.use((req, res, next) => {
@@ -168,4 +172,7 @@ app.post("/api/analyze", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Creative dashboard on http://localhost:${PORT}${DEMO ? " (demo data: set TMR_API_KEY for live data)" : ""}`);
   if (!claudeConfigured()) console.log("Claude analysis disabled: set ANTHROPIC_API_KEY to enable it");
+  if (process.env.RAILWAY_ENVIRONMENT_NAME && !process.env.DASHBOARD_PASSWORD) {
+    console.warn("WARNING: running on Railway without DASHBOARD_PASSWORD. Anyone with the URL can see ad data and run Claude analyses.");
+  }
 });

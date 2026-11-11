@@ -4,7 +4,11 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
 
-const CACHE_DIR = process.env.CACHE_DIR || path.resolve("data/cache");
+// On Railway, use the attached volume (if any) so the cache survives redeploys.
+const CACHE_DIR =
+  process.env.CACHE_DIR ||
+  (process.env.RAILWAY_VOLUME_MOUNT_PATH && path.join(process.env.RAILWAY_VOLUME_MOUNT_PATH, "cache")) ||
+  path.resolve("data/cache");
 const TTL_MS = (Number(process.env.CACHE_TTL_HOURS) || 12) * 3600 * 1000;
 
 function fileFor(key) {

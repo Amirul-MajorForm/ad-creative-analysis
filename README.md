@@ -32,7 +32,7 @@ Fill in `.env`:
 | `TMR_CURRENCY` | no | For example `SGD`. Converts all money to one currency so totals across accounts in different currencies add up. |
 | `ANTHROPIC_API_KEY` | for analysis | From platform.claude.com. Without it the dashboard works and the analysis button is disabled. |
 | `ANALYSIS_MODEL` / `ANALYSIS_EFFORT` | no | Default `claude-opus-5-5` at `high` effort. |
-| `DASHBOARD_PASSWORD` | no | Adds a password prompt (any username) if you host the dashboard. |
+| `DASHBOARD_PASSWORD` | yes when hosted | Adds a password prompt (any username). Set it on Railway. |
 
 ```bash
 npm start
@@ -47,6 +47,24 @@ npm run demo
 ```
 
 This runs with synthetic demo data. It is also used automatically when `TMR_API_KEY` is empty.
+
+## Deploying on Railway
+
+The app needs no Railway config file. Railway detects Node from `package.json` and runs `npm start`, and the server listens on the `PORT` Railway provides.
+
+1. In Railway, create a **New Project** > **Deploy from GitHub repo** and pick this repository. If the code isn't on the default branch yet, set the branch under the service's **Settings > Source**.
+2. In the service's **Variables** tab, add:
+   - `TMR_API_KEY` and `TMR_TEAM_ID`
+   - `ANTHROPIC_API_KEY` (to enable the analysis)
+   - `DASHBOARD_PASSWORD`: **set this.** The Railway URL is public, and without a password anyone who finds it can see your clients' ad data and run analyses on your Anthropic bill.
+   - Optional: `TMR_CURRENCY`, `CACHE_TTL_HOURS`
+
+   Don't set `PORT`; Railway sets it.
+3. Under **Settings > Networking**, click **Generate Domain** to get a public URL.
+4. Optional: under **Settings > Deploy**, set the healthcheck path to `/healthz`. This endpoint skips the password check.
+5. Recommended: attach a **Volume** to the service (any mount path, e.g. `/data`). The cache uses it automatically through `RAILWAY_VOLUME_MOUNT_PATH`. Without one, the cache is wiped on every deploy, and the first load after each deploy re-queries TMR (about 3 minutes for all accounts).
+
+When you open the URL, the browser asks for a username and password. Any username works; the password is `DASHBOARD_PASSWORD`.
 
 ## How it works
 
