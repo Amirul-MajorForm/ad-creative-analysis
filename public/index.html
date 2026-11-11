@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Creative Performance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>Creative Performance</h1>
+      <span id="demoBadge" class="badge badge-warn" hidden>Demo data</span>
+    </div>
+    <div class="load-controls">
+      <label>From <input type="date" id="startDate" /></label>
+      <label>To <input type="date" id="endDate" /></label>
+      <div class="account-picker">
+        <button id="accountBtn" class="btn" type="button">Accounts: none</button>
+        <div id="accountMenu" class="menu" hidden>
+          <input id="accountSearch" type="search" placeholder="Search accounts" />
+          <div class="menu-actions">
+            <button type="button" class="link" id="selectAllAccounts">Select shown</button>
+            <button type="button" class="link" id="clearAccounts">Clear</button>
+          </div>
+          <div id="accountList" class="account-list"></div>
+        </div>
+      </div>
+      <button id="loadBtn" class="btn btn-primary" type="button">Load ads</button>
+      <label class="check"><input type="checkbox" id="refreshToggle" /> Bypass cache</label>
+    </div>
+  </header>
+
+  <div id="status" class="status" hidden></div>
+
+  <main>
+    <section id="kpis" class="kpis"></section>
+
+    <section class="toolbar">
+      <input id="search" type="search" placeholder="Search ad name, campaign or copy" />
+      <select id="platformFilter"><option value="">All platforms</option></select>
+      <select id="formatFilter"><option value="">All formats</option></select>
+      <select id="accountFilter"><option value="">All loaded accounts</option></select>
+      <select id="sortBy">
+        <option value="spend">Sort: Spend</option>
+        <option value="impressions">Sort: Impressions</option>
+        <option value="ctr">Sort: CTR</option>
+        <option value="cpm">Sort: CPM (low first)</option>
+        <option value="cpa">Sort: CPA (low first)</option>
+        <option value="roas">Sort: ROAS</option>
+        <option value="hookRate">Sort: Hook rate</option>
+        <option value="holdRate">Sort: Hold rate</option>
+        <option value="conversions">Sort: Conversions</option>
+      </select>
+      <label class="check"><input type="checkbox" id="groupToggle" checked /> Group duplicate creatives</label>
+      <div class="view-toggle" role="group" aria-label="View">
+        <button type="button" class="btn btn-sm active" data-view="grid">Gallery</button>
+        <button type="button" class="btn btn-sm" data-view="table">Table</button>
+      </div>
+      <button id="analyzeBtn" class="btn btn-accent" type="button">Claude analysis</button>
+    </section>
+
+    <section id="grid" class="grid"></section>
+    <section id="table" class="table-wrap" hidden></section>
+    <div id="empty" class="empty">Pick one or more ad accounts and press <b>Load ads</b>.</div>
+  </main>
+
+  <dialog id="detail" class="dialog"></dialog>
+
+  <aside id="analysisPanel" class="panel" hidden>
+    <div class="panel-head">
+      <h2>Claude creative analysis</h2>
+      <button id="closePanel" class="btn btn-sm" type="button" aria-label="Close">Close</button>
+    </div>
+    <div class="panel-body">
+      <p class="muted" id="analysisScope"></p>
+      <label class="field">
+        <span>Which creatives</span>
+        <select id="analysisSelection">
+          <option value="checked">Checked creatives</option>
+          <option value="top30" selected>Top 30 by spend (current filters)</option>
+          <option value="top15">Top 15 by spend (current filters)</option>
+          <option value="topbottom">Top 15 + bottom 10 by spend-weighted results</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Context for Claude (optional)</span>
+        <textarea id="analysisNotes" rows="4" placeholder="Brand, product, objective, target CPA or ROAS, audience, what you want to learn..."></textarea>
+      </label>
+      <div class="panel-actions">
+        <button id="runAnalysis" class="btn btn-accent" type="button">Run analysis</button>
+        <button id="stopAnalysis" class="btn" type="button" hidden>Stop</button>
+        <button id="downloadReport" class="btn" type="button" hidden>Download .md</button>
+      </div>
+      <div id="analysisOutput" class="report"></div>
+    </div>
+  </aside>
+
+  <script src="vendor/marked.min.js"></script>
+  <script src="vendor/purify.min.js"></script>
+  <script src="app.js" type="module"></script>
+</body>
+</html>
